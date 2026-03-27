@@ -1,0 +1,11 @@
+services:
+  appserver:
+    depends_on:
+      - apiserver
+    hostname: app.tournabyte.com
+    build:
+      context: .
+      dockerfile: Dockerfile.webui
+      tags:
+        - appdemo
+    restart: no

@@ -1,0 +1,44 @@
+FROM alpine:3.20 AS fetcher
+
+RUN apk add --no-cache git
+ARG GIT_REPO=https://github.com/tournabyte/webui.git
+ARG GIT_BRANCH=main
+
+WORKDIR /usr/local/src/tournabyte/webui
+RUN git init
+RUN git remote add origin ${GIT_REPO}
+RUN git ls-remote ${GIT_REPO} refs/heads/${GIT_BRANCH}
+RUN git fetch --depth 1 origin ${GIT_BRANCH}
+RUN git checkout FETCH_HEAD
+
+FROM ubuntu:noble AS builder
+
+COPY --from=fetcher /usr/local/src/tournabyte/webui /opt/tournabyte/webui
+ARG FLUTTER_REPO=https://github.com/flutter/flutter.git
+ARG FLUTTER_TAG=3.41.5
+
+# necessary dependencies for building Flutter for the web applications
+RUN apt-get update
+RUN apt-get install -y curl git unzip
+RUN apt-get clean
+
+# set up flutter environment
+WORKDIR /usr/local/flutter
+RUN git init
+RUN git remote add origin ${FLUTTER_REPO}
+RUN git fetch --depth 1 origin tag ${FLUTTER_TAG}
+RUN git checkout FETCH_HEAD
+
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+ENV FLUTTER_GIT_URL="https://github.com/flutter/flutter.git"
+RUN flutter doctor -v
+RUN flutter channel stable
+RUN flutter upgrade
+RUN flutter config --enable-web
+
+# Build the flutter application
+WORKDIR /opt/tournabyte/webui
+RUN flutter build web --release --wasm
+
+FROM nginx:alpine-slim AS runner
+COPY --from=builder /opt/tournabyte/webui/build/web /usr/share/nginx/html

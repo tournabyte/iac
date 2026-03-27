@@ -1,0 +1,27 @@
+FROM alpine:3.20 AS fetcher
+
+RUN apk add --no-cache git
+ARG GIT_REPO=https://github.com/tournabyte/webapi.git
+ARG GIT_BRANCH=main
+
+WORKDIR /usr/local/src/tournabyte/webapi
+RUN git init
+RUN git remote add origin ${GIT_REPO}
+RUN git ls-remote ${GIT_REPO} refs/heads/${GIT_BRANCH}
+RUN git fetch --depth 1 origin ${GIT_BRANCH}
+RUN git checkout FETCH_HEAD
+
+FROM golang:1.26.1-alpine AS builder
+
+COPY --from=fetcher /usr/local/src/tournabyte/webapi /opt/tournabyte/webapi
+WORKDIR /opt/tournabyte/webapi
+
+RUN go mod download
+RUN go vet -v ./...
+RUN go test -v ./...
+RUN go build -v -o /usr/local/bin/com.tournabyte.webapi ./app/start/
+
+FROM alpine:3.20 AS runner
+
+COPY --from=builder /usr/local/bin/com.tournabyte.webapi /bin/com.tournabyte.webapi
+CMD ["com.tournabyte.webapi", "serve"]

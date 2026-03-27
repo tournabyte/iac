@@ -1,0 +1,58 @@
+{
+  "serve": {
+    "port": "80",
+    "security": {
+      "useTLS": false,
+      "certificateFile": "/run/secrets/tls_certificate",
+      "keychainFile": "/run/secrets/tls_keychain"
+    },
+    "sessions": {
+      "signingAlgorithm": "HS256",
+      "signingKeyFile": "/run/secrets/token_signing_key",
+      "accessTokenTTL": "15m",
+      "refreshTokenTTL": "72h",
+      "tokenIssuer": "api.tournabyte.com",
+      "tokenSubject": "Tournabate API authorization"
+    }
+  },
+  "mongodb": {
+    "hosts": [
+      "infra-dev-001.mongodb.tournabyte.com",
+      "infra-dev-002.mongodb.tournabyte.com",
+      "infra-dev-003.mongodb.tournabyte.com"
+    ],
+    "username": "/run/secrets/mongo_username",
+    "password": "/run/secrets/mongo_password"
+  },
+  "minio": {
+    "endpoint": "localhost:9000",
+    "accessKey": "/run/secrets/minio_access_id",
+    "secretKey": "/run/secrets/minio_access_key"
+  },
+  "log": [
+    {
+      "level": "debug",
+      "destination": [
+        "std.out"
+      ],
+      "source": false,
+      "json": false
+    },
+    {
+      "level": "info",
+      "destination": [
+        "/var/log/tournabyte/webapi.log"
+      ],
+      "source": true,
+      "json": false
+    },
+    {
+      "level": "error",
+      "destination": [
+        "/var/log/tournabyte/webapi.json"
+      ],
+      "source": true,
+      "json": true
+    }
+  ]
+}

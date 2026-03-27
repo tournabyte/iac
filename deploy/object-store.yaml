@@ -1,0 +1,19 @@
+services:
+  minio_dev:
+    image: quay.io/minio/minio
+    hostname: minio.tournabyte.com
+    restart: no
+    command: server --console-address :9001 /data
+    volumes:
+      - ../data/minio/01/objects:/data
+    secrets:
+      - minio_root_user
+      - minio_root_pass
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_pass
+secrets:
+  minio_root_user:
+    file: ../.env/S3ROOT_USERNAME.txt
+  minio_root_pass:
+    file: ../.env/S3ROOT_PASSWORD.txt

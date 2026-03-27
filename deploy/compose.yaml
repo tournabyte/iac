@@ -1,0 +1,20 @@
+include:
+  - object-store.yaml
+  - record-store.yaml
+  - tournabyte-webapi.yaml
+  - tournabyte-webui.yaml
+services:
+  ingress:
+    image: nginx:stable-alpine
+    ports:
+      - 8080:80
+      - 27017:27017
+      - 9001:9001
+      - 9000:9000
+    volumes:
+      - ../etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      apiserver:
+        condition: service_started
+      appserver:
+        condition: service_started

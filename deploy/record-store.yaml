@@ -1,0 +1,141 @@
+services:
+  mongodb01:
+    image: mongo:8.2-rc
+    command: --config /etc/mongod/001.conf
+    hostname: infra-dev-001.mongodb.tournabyte.com
+    restart: no
+
+    volumes:
+      - ../etc/mongod/001.conf:/etc/mongod/001.conf
+      - ../data/mongodb/001/:/data/db
+    secrets:
+      - mongodb_root_user
+      - mongodb_root_pass
+      - mongo_cluster_keyfile
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_pass
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb_root_user
+    healthcheck:
+      test:
+        [
+          CMD-SHELL,
+          mongosh,
+          --host localhost,
+          --username $(cat /run/secrets/mongodb_root_user),
+          --password $(cat /run/secrets/mongodb_root_pass),
+          --authenticationDatabase admin,
+          --eval "db.adminCommand('ping')" --quiet,
+        ]
+      start_period: 10s
+      timeout: 5s
+      interval: 15s
+      retries: 3
+  mongodb02:
+    image: mongo:8.2-rc
+    command: --config /etc/mongod/002.conf
+    hostname: infra-dev-002.mongodb.tournabyte.com
+    restart: no
+
+    volumes:
+      - ../etc/mongod/002.conf:/etc/mongod/002.conf
+      - ../data/mongodb/002/:/data/db
+    secrets:
+      - mongodb_root_user
+      - mongodb_root_pass
+      - mongo_cluster_keyfile
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_pass
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb_root_user
+    healthcheck:
+      test:
+        [
+          CMD-SHELL,
+          mongosh,
+          --host localhost,
+          --username $(cat /run/secrets/mongodb_root_user),
+          --password $(cat /run/secrets/mongodb_root_pass),
+          --authenticationDatabase admin,
+          --eval "db.adminCommand('ping')" --quiet,
+        ]
+      start_period: 10s
+      timeout: 5s
+      interval: 15s
+      retries: 3
+  mongodb03:
+    image: mongo:8.2-rc
+    command: --config /etc/mongod/003.conf
+    hostname: infra-dev-003.mongodb.tournabyte.com
+    restart: no
+
+    volumes:
+      - ../etc/mongod/003.conf:/etc/mongod/003.conf
+      - ../data/mongodb/003/:/data/db
+    secrets:
+      - mongodb_root_user
+      - mongodb_root_pass
+      - mongo_cluster_keyfile
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_pass
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb_root_user
+    healthcheck:
+      test:
+        [
+          CMD-SHELL,
+          mongosh,
+          --host localhost,
+          --username $(cat /run/secrets/mongodb_root_user),
+          --password $(cat /run/secrets/mongodb_root_pass),
+          --authenticationDatabase admin,
+          --eval "db.adminCommand('ping')" --quiet,
+        ]
+      start_period: 10s
+      timeout: 5s
+      interval: 15s
+      retries: 3
+  ensurereplicaset:
+    image: mongo:8.2-rc
+    depends_on:
+      mongodb01:
+        condition: service_healthy
+      mongodb02:
+        condition: service_healthy
+      mongodb03:
+        condition: service_healthy
+    restart: "no"
+    entrypoint:
+      - bash
+      - -c
+      - "mongosh --username $(cat /run/secrets/mongodb_root_user) --password $(cat /run/secrets/mongodb_root_pass) --host mongodb01 --file /ensure_mongo_replicaset.js"
+    volumes:
+      - ../init/ensure_mongo_replicaset.js:/ensure_mongo_replicaset.js
+    secrets:
+      - mongodb_root_user
+      - mongodb_root_pass
+  ensureunprivilegeduser:
+    image: mongo:8.2-rc
+    depends_on:
+      ensurereplicaset:
+        condition: service_completed_successfully
+    restart: no
+    entrypoint:
+      - bash
+      - -c
+      - "mongosh --username $(cat /run/secrets/mongodb_root_user) --password $(cat /run/secrets/mongodb_root_pass) --host infra-dev/mongodb01,mongodb02,mongodb03 --file /ensure_mongo_unprivileged_user.js"
+    volumes:
+      - ../init/ensure_mongo_unprivileged_user.js:/ensure_mongo_unprivileged_user.js
+    secrets:
+      - mongodb_root_user
+      - mongodb_root_pass
+      - mongodb_app_user
+      - mongodb_app_pass
+secrets:
+  mongo_cluster_keyfile:
+    file: ../.env/DBSHARD_KEYFILE.txt
+  mongodb_root_user:
+    file: ../.env/DBROOT_USERNAME.txt
+  mongodb_root_pass:
+    file: ../.env/DBROOT_PASSWORD.txt
+  mongodb_app_user:
+    file: ../.env/API_DB_USERNAME.txt
+  mongodb_app_pass:
+    file: ../.env/API_DB_PASSWORD.txt
