@@ -3,12 +3,15 @@ services:
     image: quay.io/minio/minio
     hostname: minio.tournabyte.com
     restart: no
-    command: server --console-address :9001 /data
+    command: server --address :9000 --console-address :9001 /data
     volumes:
       - ../data/minio/01/objects:/data
     secrets:
       - minio_root_user
       - minio_root_pass
+    ports:
+      - 9000:9000
+      - 9001:9001
     environment:
       MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_pass
