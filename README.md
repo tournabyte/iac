@@ -18,9 +18,7 @@ This repository contains the infrastructure-as-code (IaC) for deploying a Tourna
 ├── init/                       # Initialization scripts run before or during deployment
 │   ├── deployment_secrets.sh   # Generates all required secrets into .env/
 │   ├── ensure_mongo_replicaset.js  # Initializes the MongoDB replica set (JS, used by compose)
-│   ├── ensure_mongo_rs.sh          # Initializes the MongoDB replica set (shell alternative)
 │   ├── ensure_mongo_unprivileged_user.js  # Creates the app-level MongoDB user (JS, used by compose)
-│   └── ensure_mongo_user.sh        # Creates the app-level MongoDB user (shell alternative)
 └── deploy/                     # Docker Compose deployment manifests and Dockerfiles
     ├── compose.yaml            # Root compose file — includes all service definitions
     ├── record-store.yaml       # MongoDB replica set service definitions
