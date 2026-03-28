@@ -53,10 +53,10 @@ generate_certificate() {
 }
 
 echo "Generating secrets..."
-generate_login "API_DB_USERNAME" "tbyte-user" 600
+generate_login "API_DB_USERNAME" "tbyte-api" 600
 generate_secret_string "API_DB_PASSWORD" 128 400
 generate_secret_string "API_S3_ACCESS_KEY" 128 400
-generate_login "API_S3_ACCESS_ID" "minioadmin" 600
+generate_login "API_S3_ACCESS_ID" "tbyte-api" 600
 generate_certificate "API_TLS"
 generate_secret_string "DBROOT_PASSWORD" 128 400
 generate_login "DBROOT_USERNAME" "mongoadmin" 600

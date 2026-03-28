@@ -15,8 +15,34 @@ services:
     environment:
       MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_pass
+    healthcheck:
+      test: curl -f http://127.0.0.1:9001/minio/health/live || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+  ensureunprivilegedaccess:
+    image: quay.io/minio/minio
+    depends_on:
+      minio_dev:
+        condition: service_healthy
+    entrypoint:
+      - bash
+      - /usr/local/bin/ensure_minio_unprivileged_user.sh
+    secrets:
+      - minio_root_user
+      - minio_root_pass
+      - minio_app_user
+      - minio_app_pass
+    volumes:
+      - ../init/ensure_minio_unprivileged_user.sh:/usr/local/bin/ensure_minio_unprivileged_user.sh
+      - ../etc/minio/policies/webapi.json:/var/minio/policies/webapi.json
 secrets:
   minio_root_user:
     file: ../.env/S3ROOT_USERNAME.txt
   minio_root_pass:
     file: ../.env/S3ROOT_PASSWORD.txt
+  minio_app_user:
+    file: ../.env/API_S3_ACCESS_ID.txt
+  minio_app_pass:
+    file: ../.env/API_S3_ACCESS_KEY.txt

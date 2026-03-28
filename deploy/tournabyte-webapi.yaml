@@ -1,8 +1,8 @@
 services:
   apiserver:
     depends_on:
-      minio_dev:
-        condition: service_started
+      ensureunprivilegedaccess:
+        condition: service_completed_successfully
       ensurereplicaset:
         condition: service_completed_successfully
       ensureunprivilegeduser:
