@@ -8,4 +8,6 @@ services:
       dockerfile: Dockerfile.webui
       tags:
         - appdemo
+      args:
+        GIT_BRANCH: main
     restart: no

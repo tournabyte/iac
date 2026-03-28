@@ -14,7 +14,7 @@ services:
       tags:
         - apidemo
       args:
-        GIT_BRANCH: patch-config
+        GIT_BRANCH: main
     restart: no
     volumes:
       - ../etc/tournabyte/webapi.json:/etc/tournabyte/webapi.json
