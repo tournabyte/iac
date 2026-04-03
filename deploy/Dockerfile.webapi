@@ -24,4 +24,4 @@ RUN go build -v -o /usr/local/bin/apitournabytectl ./main.go
 FROM alpine:3.20 AS runner
 
 COPY --from=builder /usr/local/bin/apitournabytectl /bin/apitournabytectl
-CMD ["apitournabytectl", "serve"]
+CMD ["apitournabytectl", "server"]
