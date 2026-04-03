@@ -18,10 +18,10 @@ WORKDIR /opt/tournabyte/webapi
 
 RUN go mod download
 RUN go vet -v ./...
-RUN go test -v ./...
-RUN go build -v -o /usr/local/bin/com.tournabyte.webapi ./app/start/
+RUN go test -v -race ./...
+RUN go build -v -o /usr/local/bin/apitournabytectl ./main.go
 
 FROM alpine:3.20 AS runner
 
-COPY --from=builder /usr/local/bin/com.tournabyte.webapi /bin/com.tournabyte.webapi
-CMD ["com.tournabyte.webapi", "serve"]
+COPY --from=builder /usr/local/bin/apitournabtyectl /bin/apitournabytectl
+CMD ["apitournabtyectl", "serve"]
