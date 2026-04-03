@@ -14,7 +14,7 @@ services:
       tags:
         - apidemo
       args:
-        GIT_BRANCH: main
+        GIT_BRANCH: pkg-service
     restart: no
     volumes:
       - ../etc/tournabyte/webapi.json:/etc/tournabyte/webapi.json
