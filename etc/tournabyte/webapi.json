@@ -25,7 +25,7 @@
     "password": "/run/secrets/mongo_password"
   },
   "minio": {
-    "endpoint": "localhost:9000",
+    "endpoint": "minio.tournabyte.com:9000",
     "accessKey": "/run/secrets/minio_access_id",
     "secretKey": "/run/secrets/minio_access_key"
   },
