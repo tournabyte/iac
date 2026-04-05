@@ -29,30 +29,11 @@
     "accessKey": "/run/secrets/minio_access_id",
     "secretKey": "/run/secrets/minio_access_key"
   },
-  "log": [
-    {
-      "level": "debug",
-      "destination": [
-        "std.out"
-      ],
-      "source": false,
-      "json": false
-    },
-    {
-      "level": "info",
-      "destination": [
-        "/var/log/tournabyte/webapi.log"
-      ],
-      "source": true,
-      "json": false
-    },
-    {
-      "level": "error",
-      "destination": [
-        "/var/log/tournabyte/webapi.json"
-      ],
-      "source": true,
-      "json": true
-    }
-  ]
+  "log": {
+    "destinations": [
+      "stdout"
+    ],
+    "prefix": "",
+    "flags": 51
+  }
 }
