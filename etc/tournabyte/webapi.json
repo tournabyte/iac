@@ -33,7 +33,7 @@
     "destinations": [
       "stdout"
     ],
-    "prefix": "",
+    "prefix": "[API] ",
     "flags": 51
   }
 }
