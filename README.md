@@ -252,9 +252,9 @@ $ docker compose build --no-cache apiserver appserver
 $ docker compose up -d
 ```
 
-The `GIT_BRANCH` build argument for `apiserver` is set to `patch-config` in `tournabyte-webapi.yaml`. Override it at build time to target a different branch:
+The `GIT_BRANCH` build argument for `apiserver` is set to `main` in `tournabyte-webapi.yaml`. Override it at build time to target a different branch:
 
 ```bash
-$ docker compose build --build-arg GIT_BRANCH=main apiserver
+$ docker compose build --build-arg GIT_BRANCH=develop apiserver
 ```
 
